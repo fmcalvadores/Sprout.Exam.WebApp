@@ -6,7 +6,7 @@ export class EmployeeEdit extends Component {
 
   constructor(props) {
     super(props);
-    this.state = { id: 0,fullName: '',birthdate: '',tin: '',typeId: 1, loading: true,loadingSave:false };
+    this.state = { id: 0,fullName: '',birthdate: '',tin: '',typeId: 1,salary: 0, loading: true,loadingSave:false };
   }
 
   componentDidMount() {
@@ -52,6 +52,12 @@ export class EmployeeEdit extends Component {
   </select>
 </div>
 </div>
+<div className="form-row">
+    <div className='form-group col-md-6'>
+        <label htmlFor='inputSalary4'>Salary: *</label>
+        <input type='text' className='form-control' id='inputSalary4' onChange={this.handleChange.bind(this)} value={this.state.salary} name="salary" placeholder='Salary' />
+    </div>
+</div>
 <button type="submit" onClick={this.handleSubmit.bind(this)} disabled={this.state.loadingSave} className="btn btn-primary mr-2">{this.state.loadingSave?"Loading...": "Save"}</button>
 <button type="button" onClick={() => this.props.history.push("/employees/index")} className="btn btn-primary">Back</button>
 </form>
@@ -94,6 +100,6 @@ export class EmployeeEdit extends Component {
       headers: !token ? {} : { 'Authorization': `Bearer ${token}` }
     });
     const data = await response.json();
-    this.setState({ id: data.id,fullName: data.fullName,birthdate: data.birthdate,tin: data.tin,typeId: data.typeId, loading: false,loadingSave: false });
+    this.setState({ id: data.id,fullName: data.fullName,birthdate: data.birthdate,tin: data.tin,typeId: data.typeId,salary:data.salary, loading: false,loadingSave: false });
   }
 }

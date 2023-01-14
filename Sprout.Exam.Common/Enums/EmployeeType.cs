@@ -9,4 +9,9 @@ namespace Sprout.Exam.Common.Enums
         Regular = 1,
         Contractual = 2
     }
+
+    public enum TaxRate 
+    { 
+        Rate = 12
+    }
 }

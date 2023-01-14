@@ -9,8 +9,8 @@ namespace Sprout.Exam.DataAccess.Services.Interfaces
 {
     public interface IQueryService
     {
-        Task<List<EmployeeDto>> GetAllEmployees();
+        Task<List<EmployeeDTO>> GetAllEmployees();
 
-        Task<EmployeeDto> GetEmployeeById(int id);
+        Task<EmployeeDTO> GetEmployeeById(int id);
     }
 }

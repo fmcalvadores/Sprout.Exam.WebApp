@@ -7,11 +7,12 @@ using System.Text;
 
 namespace Sprout.Exam.DataAccess.Services.Extensions
 {
-    public static class QueryServiceExtension
+    public static class EmployeeServiceExtenstion
     {
-        public static IMapper GetMapper(this QueryService query)
+
+        public static IMapper GetMapper(this EmployeeService query)
         {
-            return (new MapperConfiguration( cfg => 
+            return (new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<Employee, EmployeeDTO>()
                     .ForMember(x => x.TypeId, dto => dto.MapFrom(src => src.EmployeeTypeId));

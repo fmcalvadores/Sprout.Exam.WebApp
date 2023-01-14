@@ -14,6 +14,8 @@ using Sprout.Exam.DataAccess.Services;
 using Sprout.Exam.DataAccess.Services.Interfaces;
 using Sprout.Exam.WebApp.Data;
 using Sprout.Exam.WebApp.Models;
+using System;
+using System.Threading.Tasks;
 
 namespace Sprout.Exam.WebApp
 {
@@ -48,6 +50,7 @@ namespace Sprout.Exam.WebApp
             
 
             services.AddScoped<IQueryService, QueryService>();
+            services.AddScoped<IEmployeeService, EmployeeService>();
 
             services.AddControllersWithViews();
             services.AddRazorPages();
@@ -100,6 +103,18 @@ namespace Sprout.Exam.WebApp
                     spa.UseReactDevelopmentServer(npmScript: "start");
                 }
             });
+
+            InitializeDataBase(app.ApplicationServices).GetAwaiter().GetResult();
+
         }
+
+        private static async Task InitializeDataBase(IServiceProvider service)
+        {
+            using var scope = service.GetRequiredService<IServiceScopeFactory>().CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            await context.Database.EnsureCreatedAsync();
+        }
+
+
     }
 }

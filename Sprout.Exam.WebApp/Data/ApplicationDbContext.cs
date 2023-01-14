@@ -17,7 +17,7 @@ namespace Sprout.Exam.WebApp.Data
             DbContextOptions options,
             IOptions<OperationalStoreOptions> operationalStoreOptions) : base(options, operationalStoreOptions)
         {
-
+            Database.EnsureCreated();
         }
 
         public DbSet<Employee> Employee { get; set; }

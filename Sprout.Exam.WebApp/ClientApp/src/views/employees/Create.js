@@ -6,7 +6,7 @@ export class EmployeeCreate extends Component {
 
   constructor(props) {
     super(props);
-    this.state = { fullName: '',birthdate: '',tin: '',typeId: 1, loading: false,loadingSave:false };
+    this.state = { fullName: '',birthdate: '',tin: '',typeId: 1,salary:0, loading: false,loadingSave:false };
   }
 
   componentDidMount() {
@@ -51,6 +51,12 @@ export class EmployeeCreate extends Component {
     <option value='2'>Contractual</option>
   </select>
 </div>
+</div>
+<div className="form-row">
+    <div className='form-group col-md-6'>
+        <label htmlFor='inputSalary4'>Salary: *</label>
+        <input type='text' className='form-control' id='inputSalary4' onChange={this.handleChange.bind(this)} value={this.state.salary} name="salary" placeholder='Salary' />
+    </div>
 </div>
 <button type="submit" onClick={this.handleSubmit.bind(this)} disabled={this.state.loadingSave} className="btn btn-primary mr-2">{this.state.loadingSave?"Loading...": "Save"}</button>
 <button type="button" onClick={() => this.props.history.push("/employees/index")} className="btn btn-primary">Back</button>

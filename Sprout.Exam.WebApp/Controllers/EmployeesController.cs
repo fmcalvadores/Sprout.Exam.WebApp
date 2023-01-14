@@ -20,11 +20,13 @@ namespace Sprout.Exam.WebApp.Controllers
 
         private readonly ILogger _logger;
         private readonly IQueryService _queryService;
+        private readonly IEmployeeService _employeeService;
 
-        public EmployeesController(ILogger<EmployeesController> logger,IQueryService queryService)
+        public EmployeesController(ILogger<EmployeesController> logger,IQueryService queryService, IEmployeeService employeeService)
         {
             _logger = logger;
             _queryService = queryService;
+            _employeeService = employeeService;
         }
 
         /// <summary>
@@ -34,7 +36,7 @@ namespace Sprout.Exam.WebApp.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            List<EmployeeDto> result = new();
+            List<EmployeeDTO> result = new();
             try {
 
                 result = await Task.FromResult(await _queryService.GetAllEmployees());
@@ -54,8 +56,7 @@ namespace Sprout.Exam.WebApp.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var employee = await _queryService.GetEmployeeById(id);
-            var result = await Task.FromResult(employee);
+            var result = await Task.FromResult(await _queryService.GetEmployeeById(id));
             return Ok(result);
         }
 
@@ -64,15 +65,12 @@ namespace Sprout.Exam.WebApp.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(EditEmployeeDto input)
+        public async Task<IActionResult> Put(EditEmployeeDTO input)
         {
-            var item = await Task.FromResult(StaticEmployees.ResultList.FirstOrDefault(m => m.Id == input.Id));
-            if (item == null) return NotFound();
-            item.FullName = input.FullName;
-            item.Tin = input.Tin;
-            item.Birthdate = null; //input.Birthdate.ToString("yyyy-MM-dd");
-            item.TypeId = input.TypeId;
-            return Ok(item);
+
+            var employee = await _employeeService.UpdateEmployee(input);
+            if (employee == null) return NotFound();
+            return Ok(employee);
         }
 
         /// <summary>
@@ -80,21 +78,12 @@ namespace Sprout.Exam.WebApp.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> Post(CreateEmployeeDto input)
+        public async Task<IActionResult> Post(CreateEmployeeDTO input)
         {
 
-           var id = await Task.FromResult(StaticEmployees.ResultList.Max(m => m.Id) + 1);
+            var result = await _employeeService.AddEmployee(input);
+            return Created($"/api/employees/{result.Id}", result.Id);
 
-            StaticEmployees.ResultList.Add(new EmployeeDto
-            {
-                Birthdate = null,// input.Birthdate.ToString("yyyy-MM-dd"),
-                FullName = input.FullName,
-                Id = id,
-                Tin = input.Tin,
-                TypeId = input.TypeId
-            });
-
-            return Created($"/api/employees/{id}", id);
         }
 
 
@@ -105,9 +94,10 @@ namespace Sprout.Exam.WebApp.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var result = await Task.FromResult(StaticEmployees.ResultList.FirstOrDefault(m => m.Id == id));
+            //var result = await Task.FromResult(StaticEmployees.ResultList.FirstOrDefault(m => m.Id == id));
+            var result = await _employeeService.Deletemployee(id);
             if (result == null) return NotFound();
-            StaticEmployees.ResultList.RemoveAll(m => m.Id == id);
+            //StaticEmployees.ResultList.RemoveAll(m => m.Id == id);
             return Ok(id);
         }
 
@@ -120,17 +110,19 @@ namespace Sprout.Exam.WebApp.Controllers
         /// <param name="absentDays"></param>
         /// <param name="workedDays"></param>
         /// <returns></returns>
-        [HttpPost("{id}/calculate")]
-        public async Task<IActionResult> Calculate(int id,decimal absentDays,decimal workedDays)
+        [HttpPost("{id}/calculate/{absentDays}/{workedDays}"), Produces("application/json")]
+        public async Task<IActionResult> Calculate(int id, float absentDays, float workedDays)
         {
-            var result = await Task.FromResult(StaticEmployees.ResultList.FirstOrDefault(m => m.Id == id));
-
+            var result = await Task.FromResult(await _queryService.GetEmployeeById(id));
             if (result == null) return NotFound();
             var type = (EmployeeType) result.TypeId;
             return type switch
             {
                 EmployeeType.Regular =>
                     //create computation for regular.
+
+                    
+
                     Ok(25000),
                 EmployeeType.Contractual =>
                     //create computation for contractual.

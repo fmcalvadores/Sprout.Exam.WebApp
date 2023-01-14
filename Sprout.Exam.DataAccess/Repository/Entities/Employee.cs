@@ -11,6 +11,7 @@ namespace Sprout.Exam.DataAccess.Repository.Entities
       public DateTime? Birthdate { get; set; }
       public string TIN { get; set; }
       public int EmployeeTypeId { get; set; }
+      public float Salary { get; set; }
       public bool IsDeleted { get; set; }
 }
 }

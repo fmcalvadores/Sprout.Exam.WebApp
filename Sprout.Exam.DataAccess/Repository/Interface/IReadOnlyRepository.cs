@@ -84,9 +84,6 @@ namespace Sprout.Exam.DataAccess.Repository
         TEntity GetById<TEntity>(object id)
             where TEntity : class, IEntity;
 
-        Task<TEntity> GetByIdAsync<TEntity>(object id)
-            where TEntity : class, IEntity;
-
         int GetCount<TEntity>(Expression<Func<TEntity, bool>> filter = null)
             where TEntity : class, IEntity;
 

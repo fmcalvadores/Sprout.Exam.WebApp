@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore.Query;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
 using System.Linq;
 using System.Linq.Expressions;
@@ -99,12 +100,6 @@ namespace Sprout.Exam.DataAccess.Repository
             where TEntity : class, IEntity
         {
             return _context.Set<TEntity>().Find(id);
-        }
-
-        public virtual Task<TEntity> GetByIdAsync<TEntity>(object id)
-            where TEntity : class, IEntity
-        {
-            return null;// _context.Set<TEntity>().FindAsync(id);
         }
 
         public virtual int GetCount<TEntity>(Expression<Func<TEntity, bool>> filter = null)

@@ -4,8 +4,8 @@ using System.Text;
 
 namespace Sprout.Exam.Business.DataTransferObjects
 {
-    public class CreateEmployeeDto: BaseSaveEmployeeDto
+    public class EmployeeDTO: BaseSaveEmployeeDTO
     {
-
+        public int Id { get; set; }
     }
 }

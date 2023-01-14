@@ -15,23 +15,19 @@ namespace Sprout.Exam.DataAccess.Services
     public class QueryService : BaseService, IQueryService
     {
         private readonly IMapper _mapper;
-        //private readonly UserManager<ExtendedIdentityUser> _userManager;
-       // private readonly IDDPAService _ddpaService;
 
         public QueryService(ILogger<QueryService> logger, IRepository repo) : base(logger, repo)
-        {
-            //_userManager = userManager;
-            
+        {   
             _mapper = this.GetMapper();
         }
-        public async Task<List<EmployeeDto>> GetAllEmployees()
+        public async Task<List<EmployeeDTO>> GetAllEmployees()
         {
-            var response = new List<EmployeeDto>();
+            var response = new List<EmployeeDTO>();
             try
             {
                 var employeeList = await _repo.GetAsync<Employee>();
                 
-               response = _mapper.Map<List<EmployeeDto>>(employeeList);
+               response = _mapper.Map<List<EmployeeDTO>>(employeeList);
             }
             catch (Exception e) 
             {
@@ -40,15 +36,15 @@ namespace Sprout.Exam.DataAccess.Services
             return response;
         }
 
-        public async Task<EmployeeDto> GetEmployeeById(int id)
+        public async Task<EmployeeDTO> GetEmployeeById(int id)
         {
-            var response = new EmployeeDto();
+            var response = new EmployeeDTO();
             try
             {
                 var employee = await _repo.GetFirstAsync<Employee>(
                     filter: d => d.Id == id
                     );
-                response = _mapper.Map<EmployeeDto>(employee);
+                response = _mapper.Map<EmployeeDTO>(employee);
             }
             catch (Exception e) 
             {
