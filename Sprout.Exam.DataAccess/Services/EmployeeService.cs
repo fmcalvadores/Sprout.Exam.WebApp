@@ -8,8 +8,7 @@ using Sprout.Exam.DataAccess.Repository.Entities;
 using Sprout.Exam.DataAccess.Services.Extensions;
 using Sprout.Exam.DataAccess.Services.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Sprout.Exam.DataAccess.Services
@@ -29,7 +28,6 @@ namespace Sprout.Exam.DataAccess.Services
             try
             {
 
-                // TODO : add validations
                 var employeeCount = await _repo.GetCountAsync<Employee>();
 
                 var employee = new Employee() {
@@ -56,18 +54,42 @@ namespace Sprout.Exam.DataAccess.Services
             return response;
         }
 
-        public float CalculateSalary(EmployeeDTO dto)
+        public double CalculateSalaryForRegular(float salary, float absentDays)
         {
-            var netPay = 0;
             try
             {
-                
+                var workdaysOfTheMonth = GetDates(DateTime.Now.Year, DateTime.Now.Month);
+                var workDaysRendered = workdaysOfTheMonth - absentDays;
+                var rate = (float) TaxRate.Rate / 100;
+                salary = salary - (salary / workDaysRendered) - (salary * rate);                
             }
             catch (Exception e)
             {
-                _logger.LogError("Error calling CalculateSalary: {0}", e.Message);
+                _logger.LogError("Error calling CalculateSalaryForRegular: {0}", e.Message);
             }
-            return netPay;
+            return Math.Round(salary,2);
+        }
+
+        public double CalculateSalaryForContractual(float salary, float workedDays)
+        {
+            try
+            {
+                salary *= workedDays;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("Error calling CalculateSalaryForContractual: {0}", e.Message);
+            }
+            return Math.Round(salary, 2);
+        }
+
+        public int GetDates(int year, int month)
+        {
+            return Enumerable.Range(1, DateTime.DaysInMonth(year, month))
+                             .Select(day => new DateTime(year, month, day))
+                             .Where(dt => dt.DayOfWeek != DayOfWeek.Sunday &&
+                                          dt.DayOfWeek != DayOfWeek.Saturday)
+                             .ToList().Count;
         }
 
         public async Task<Result> Deletemployee(int id)
@@ -80,7 +102,8 @@ namespace Sprout.Exam.DataAccess.Services
                 {
                    return response;
                 }
-                _repo.Delete(employee);
+                employee.IsDeleted = true;
+                _repo.Update(employee);
                 await _repo.SaveAsync();
 
                 response.Success = true;
@@ -101,22 +124,17 @@ namespace Sprout.Exam.DataAccess.Services
             {
                 var employee = await _repo.GetFirstAsync<Employee>(filter: c => c.Id == dto.Id);
                 
-                if (employee == null)
-                {
-                    
-                    return response;
-                }
-
+                if (employee == null) return response;
+                
                 employee.Birthdate = dto.Birthdate;
                 employee.EmployeeTypeId = dto.TypeId;
                 employee.FullName = dto.FullName;
                 employee.IsDeleted = dto.IsDeleted;
                 employee.TIN = dto.Tin;
+                employee.Salary = dto.Salary;
 
                 _repo.Update(employee);
                 await _repo.SaveAsync();
-                //response.Success = true;
-                //response.Message = "Employee successfully edited";
 
                 response = _mapper.Map<EmployeeDTO>(employee);
 
@@ -125,6 +143,7 @@ namespace Sprout.Exam.DataAccess.Services
             {
                 _logger.LogError("Error calling UpdateEmployee: {0}", e.Message);
             }
+
             return response;
 
         }

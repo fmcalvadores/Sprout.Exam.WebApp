@@ -20,6 +20,12 @@ namespace Sprout.Exam.DataAccess.Services
         {   
             _mapper = this.GetMapper();
         }
+
+        public QueryService(ILogger<QueryService> logger) : base(logger)
+        {
+            _mapper = this.GetMapper();
+        }
+
         public async Task<List<EmployeeDTO>> GetAllEmployees()
         {
             var response = new List<EmployeeDTO>();
@@ -41,14 +47,48 @@ namespace Sprout.Exam.DataAccess.Services
             var response = new EmployeeDTO();
             try
             {
-                var employee = await _repo.GetFirstAsync<Employee>(
-                    filter: d => d.Id == id
-                    );
-                response = _mapper.Map<EmployeeDTO>(employee);
+                var employee = await _repo.GetFirstAsync<Employee>(filter: d => d.Id == id);
+                if (employee != null) response = _mapper.Map<EmployeeDTO>(employee);
+                
             }
             catch (Exception e) 
             {
                 _logger.LogError("Error calling GetEmployeeById: {0}", e.Message);
+            }
+
+            return response;
+        }
+
+        public async Task<EmployeeDTO> GetEmployeeByFullName(string FullName)
+        {
+            var response = new EmployeeDTO();
+            try
+            {
+                
+                var employee = await _repo.GetFirstAsync<Employee>(filter: d => d.FullName.ToLower().Contains(FullName.ToLower()));
+                if (employee != null) response = _mapper.Map<EmployeeDTO>(employee);
+
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("Error calling GetEmployeeById: {0}", e.Message);
+            }
+            return response;
+        }
+
+        public async Task<EmployeeDTO> SearchForTIN(string TIN)
+        {
+            var response = new EmployeeDTO();
+            try
+            {
+
+                var employee = await _repo.GetFirstAsync<Employee>(filter: d => d.TIN.Contains(TIN));
+                if (employee != null) response = _mapper.Map<EmployeeDTO>(employee);
+
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("Error calling SearchForTIN: {0}", e.Message);
             }
             return response;
         }
