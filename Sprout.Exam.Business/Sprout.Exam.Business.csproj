@@ -4,8 +4,4 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Sprout.Exam.Common\Sprout.Exam.Common.csproj" />
-  </ItemGroup>
-
 </Project>

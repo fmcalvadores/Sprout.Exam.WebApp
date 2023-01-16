@@ -15,6 +15,10 @@ namespace Sprout.Exam.DataAccess.Services.Interfaces
 
         Task<Result> Deletemployee(int id);
 
-        float CalculateSalary(EmployeeDTO dto, float absentDays);
+        double CalculateSalaryForRegular(float salary, float absentDays);
+
+        double CalculateSalaryForContractual(float salary, float workedDays);
+
+        int GetDates(int year, int month);
     }
 }

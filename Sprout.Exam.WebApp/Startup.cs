@@ -51,6 +51,7 @@ namespace Sprout.Exam.WebApp
 
             services.AddScoped<IQueryService, QueryService>();
             services.AddScoped<IEmployeeService, EmployeeService>();
+            services.AddScoped<IValidationService, ValidationService>();
 
             services.AddControllersWithViews();
             services.AddRazorPages();

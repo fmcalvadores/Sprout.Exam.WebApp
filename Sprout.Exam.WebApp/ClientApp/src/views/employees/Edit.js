@@ -12,8 +12,16 @@ export class EmployeeEdit extends Component {
   componentDidMount() {
     this.getEmployee(this.props.match.params.id);
   }
-  handleChange(event) {
-    this.setState({ [event.target.name] : event.target.value});
+    handleChange(event) {
+        
+        this.setState({ [event.target.name]: event.target.value });
+        if (event.target.name == 'typeId') {
+            this.setState({ salary: 0 });
+            if (event.target.value == '2')
+            {
+                this.setState({ salary: 500 });
+            }
+        }
   }
 
   handleSubmit(e){
@@ -55,7 +63,7 @@ export class EmployeeEdit extends Component {
 <div className="form-row">
     <div className='form-group col-md-6'>
         <label htmlFor='inputSalary4'>Salary: *</label>
-        <input type='text' className='form-control' id='inputSalary4' onChange={this.handleChange.bind(this)} value={this.state.salary} name="salary" placeholder='Salary' />
+        <input type='number' className='form-control' id='inputSalary4' onChange={this.handleChange.bind(this)} value={this.state.salary} name="salary" placeholder='Salary' />
     </div>
 </div>
 <button type="submit" onClick={this.handleSubmit.bind(this)} disabled={this.state.loadingSave} className="btn btn-primary mr-2">{this.state.loadingSave?"Loading...": "Save"}</button>
@@ -99,7 +107,8 @@ export class EmployeeEdit extends Component {
     const response = await fetch('api/employees/' + id, {
       headers: !token ? {} : { 'Authorization': `Bearer ${token}` }
     });
-    const data = await response.json();
-    this.setState({ id: data.id,fullName: data.fullName,birthdate: data.birthdate,tin: data.tin,typeId: data.typeId,salary:data.salary, loading: false,loadingSave: false });
+      const data = await response.json();
+      console.log(data);
+      this.setState({ id: data.id, fullName: data.fullName, birthdate: data.birthdate.substring(0, 10),tin: data.tin,typeId: data.typeId,salary:data.salary, loading: false,loadingSave: false });
   }
 }

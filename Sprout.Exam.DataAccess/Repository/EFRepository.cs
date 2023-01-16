@@ -14,6 +14,8 @@ namespace Sprout.Exam.DataAccess.Repository
         {
         }
 
+
+
         public virtual void Create<TEntity>(TEntity entity)
             where TEntity : class, IEntity
         {

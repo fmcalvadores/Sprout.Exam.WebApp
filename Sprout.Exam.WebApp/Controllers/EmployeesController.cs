@@ -9,6 +9,7 @@ using Sprout.Exam.Business.DataTransferObjects;
 using Sprout.Exam.Common.Enums;
 using Microsoft.Extensions.Logging;
 using Sprout.Exam.DataAccess.Services.Interfaces;
+using Sprout.Exam.Common.Results;
 
 namespace Sprout.Exam.WebApp.Controllers
 {
@@ -21,12 +22,14 @@ namespace Sprout.Exam.WebApp.Controllers
         private readonly ILogger _logger;
         private readonly IQueryService _queryService;
         private readonly IEmployeeService _employeeService;
+        private readonly IValidationService _validationService;
 
-        public EmployeesController(ILogger<EmployeesController> logger,IQueryService queryService, IEmployeeService employeeService)
+        public EmployeesController(ILogger<EmployeesController> logger,IQueryService queryService, IEmployeeService employeeService, IValidationService validationService)
         {
             _logger = logger;
             _queryService = queryService;
             _employeeService = employeeService;
+            _validationService = validationService;
         }
 
         /// <summary>
@@ -56,6 +59,7 @@ namespace Sprout.Exam.WebApp.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
+            
             var result = await Task.FromResult(await _queryService.GetEmployeeById(id));
             return Ok(result);
         }
@@ -68,7 +72,9 @@ namespace Sprout.Exam.WebApp.Controllers
         public async Task<IActionResult> Put(EditEmployeeDTO input)
         {
 
+            
             var employee = await _employeeService.UpdateEmployee(input);
+
             if (employee == null) return NotFound();
             return Ok(employee);
         }
@@ -77,15 +83,17 @@ namespace Sprout.Exam.WebApp.Controllers
         /// Refactor this method to go through proper layers and insert employees to the DB.
         /// </summary>
         /// <returns></returns>
-        [HttpPost]
+        [HttpPost, Produces("application/json")]
         public async Task<IActionResult> Post(CreateEmployeeDTO input)
         {
 
+            var validateFullName = await _validationService.ValidateEmployee(input);
+            if (!validateFullName.Success) return  BadRequest(validateFullName); 
+            
             var result = await _employeeService.AddEmployee(input);
-            return Created($"/api/employees/{result.Id}", result.Id);
+            return Ok(result);
 
         }
-
 
         /// <summary>
         /// Refactor this method to go through proper layers and perform soft deletion of an employee to the DB.
@@ -94,10 +102,8 @@ namespace Sprout.Exam.WebApp.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            //var result = await Task.FromResult(StaticEmployees.ResultList.FirstOrDefault(m => m.Id == id));
             var result = await _employeeService.Deletemployee(id);
             if (result == null) return NotFound();
-            //StaticEmployees.ResultList.RemoveAll(m => m.Id == id);
             return Ok(id);
         }
 
@@ -113,6 +119,7 @@ namespace Sprout.Exam.WebApp.Controllers
         [HttpPost("{id}/calculate/{absentDays}/{workedDays}"), Produces("application/json")]
         public async Task<IActionResult> Calculate(int id, float absentDays, float workedDays)
         {
+
             var result = await Task.FromResult(await _queryService.GetEmployeeById(id));
             if (result == null) return NotFound();
             var type = (EmployeeType) result.TypeId;
@@ -120,13 +127,10 @@ namespace Sprout.Exam.WebApp.Controllers
             {
                 EmployeeType.Regular =>
                     //create computation for regular.
-
-                    
-
-                    Ok(25000),
+                    Ok(_employeeService.CalculateSalaryForRegular(result.Salary, absentDays)),
                 EmployeeType.Contractual =>
                     //create computation for contractual.
-                    Ok(20000),
+                    Ok(_employeeService.CalculateSalaryForContractual(result.Salary, workedDays)),
                 _ => NotFound("Employee Type not found")
             };
 

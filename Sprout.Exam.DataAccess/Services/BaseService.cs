@@ -19,6 +19,12 @@ namespace Sprout.Exam.DataAccess.Services
             _repo = repo;
         }
 
+        public BaseService(ILogger logger)
+        {
+            _logger = logger;
+            
+        }
+
         public BaseService(ILogger logger, IRepository repo, IQueryService queryService)
         {
             _logger = logger;

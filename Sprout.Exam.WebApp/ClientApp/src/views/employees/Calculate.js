@@ -54,10 +54,10 @@ export class EmployeeCalculate extends Component {
 
 { this.state.typeId === 1?
  <div className="form-row">
-                        <div className='form-group col-md-12'><label>Salary: {this.state.salary} </label></div>
+                        <div className='form-group col-md-12'><label>Salary: <b>{this.state.salary}</b></label></div>
      <div className='form-group col-md-12'><label>Tax: 12% </label></div>
 </div> : <div className="form-row">
-<div className='form-group col-md-12'><label>Rate Per Day: 500 </label></div>
+                        <div className='form-group col-md-12'><label>Rate Per Day: <b>500</b> </label></div>
 </div> }
 
 <div className="form-row">
@@ -69,7 +69,7 @@ export class EmployeeCalculate extends Component {
 </div> :
 <div className='form-group col-md-6'>
   <label htmlFor='inputWorkDays4'>Worked Days: </label>
-  <input type='text' className='form-control' id='inputWorkDays4' onChange={this.handleChange.bind(this)} value={this.state.workedDays} name="workedDays" placeholder='Worked Days' />
+  <input type='number' className='form-control' id='inputWorkDays4' onChange={this.handleChange.bind(this)} value={this.state.workedDays} name="workedDays" placeholder='Worked Days' />
 </div>
 }
 </div>
@@ -96,7 +96,6 @@ export class EmployeeCalculate extends Component {
   }
 
     async calculateSalary() {
-        console.log(this.state);
     this.setState({ loadingCalculate: true });
     const token = await authService.getAccessToken();
     const requestOptions = {
@@ -119,7 +118,7 @@ export class EmployeeCalculate extends Component {
 
     if(response.status === 200){
         const data = await response.json();
-        this.setState({ id: data.id,fullName: data.fullName,birthdate: data.birthdate,tin: data.tin,typeId: data.typeId,salary:data.salary, loading: false,loadingCalculate: false });
+        this.setState({ id: data.id, fullName: data.fullName, birthdate: data.birthdate.substring(0, 10),tin: data.tin,typeId: data.typeId,salary:data.salary, loading: false,loadingCalculate: false });
     }
     else{
         alert("There was an error occured.");

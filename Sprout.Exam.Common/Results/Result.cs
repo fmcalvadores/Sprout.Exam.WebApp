@@ -8,14 +8,13 @@ namespace Sprout.Exam.Common.Results
         public string Id { get; set; }
         public bool Success { get; set; }
         public string Message { get; set; }
-
-        //public ErrorCode ErrorCode { get; set; }
+        public string FieldName { get; set; }
 
         public Result()
         {
             Success = false;
             Message = "";
-            //ErrorCode = ErrorCode.DEFAULT;
+            FieldName = "";
             Id = "";
         }
     }

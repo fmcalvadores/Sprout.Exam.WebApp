@@ -55,7 +55,7 @@ export class EmployeeCreate extends Component {
 <div className="form-row">
     <div className='form-group col-md-6'>
         <label htmlFor='inputSalary4'>Salary: *</label>
-        <input type='text' className='form-control' id='inputSalary4' onChange={this.handleChange.bind(this)} value={this.state.salary} name="salary" placeholder='Salary' />
+        <input type='number' className='form-control' id='inputSalary4' onChange={this.handleChange.bind(this)} value={this.state.salary} name="salary" placeholder='Salary' />
     </div>
 </div>
 <button type="submit" onClick={this.handleSubmit.bind(this)} disabled={this.state.loadingSave} className="btn btn-primary mr-2">{this.state.loadingSave?"Loading...": "Save"}</button>
@@ -77,18 +77,23 @@ export class EmployeeCreate extends Component {
     const token = await authService.getAccessToken();
     const requestOptions = {
         method: 'POST',
-        headers: !token ? {} : { 'Authorization': `Bearer ${token}`,'Content-Type': 'application/json' },
+        headers: !token ? {} : { 'Authorization': `Bearer ${token}`,'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify(this.state)
     };
-    const response = await fetch('api/employees',requestOptions);
-
-    if(response.status === 201){
-        this.setState({ loadingSave: false });
-        alert("Employee successfully saved");
+      const response = await fetch('api/employees', requestOptions)
+          .then(r => r.json())
+          .then(res => {
+              return res;
+          }).catch(err => console.log(err));
+      this.setState({ loadingSave: false });
+      
+    if(response.success){
+        alert(response.message);
         this.props.history.push("/employees/index");
     }
-    else{
-        alert("There was an error occured.");
+    else {
+        alert(response.message);
+        
     }
   }
 
